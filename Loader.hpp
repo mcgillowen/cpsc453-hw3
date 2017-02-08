@@ -7,6 +7,7 @@
 #include <vector>
 
 #include <glm/glm.hpp>
+#include <glm/gtx/transform.hpp>
 
 using std::vector;
 
@@ -16,4 +17,6 @@ class Loader {
 
     public:
         static vector<float> loadObjFile(const char * path);
-}
+};
+
+#endif // LOADER_HPP

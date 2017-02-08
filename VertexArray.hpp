@@ -5,10 +5,16 @@
 #define VERTEX_ARRAY_HPP
 
 #include <vector>
+#include <map>
+#include <string>
 
 #define GLFW_INCLUDE_GLCOREARB
 #define GL_GLEXT_PROTOTYPES
 #include <GLFW/glfw3.h>
+
+using std::vector;
+using std::map;
+using std::string;
 
 class VertexArray {
     private:
@@ -24,3 +30,5 @@ class VertexArray {
         void updateBuffer(string name, vector<float> buffer);
         virtual ~VertexArray();
 };
+
+#endif // VERTEX_ARRAY_HPP

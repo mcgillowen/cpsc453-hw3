@@ -11,21 +11,24 @@ using std::vector;
 using std::fscanf;
 using std::strcmp;
 using std::printf;
+using namespace glm;
 
 
 vector<float> Loader::loadObjFile(const char * path) {
 
-    vector<glm::vec3> vertices;
+    vector<vec3> vertices;
     vector<unsigned int> vertexIndices;
-    vector<glm::vec3> normals;
+    vector<vec3> normals;
 
-    FILE * file = fopen(path, r);
+    bool openFile = true;
+
+    FILE * file = fopen(path, "r");
     if (file == NULL) {
         printf("Impossible to open the file \n");
-        return false;
+        openFile = false;
     }
 
-    while (true) {
+    while (openFile) {
 
         char lineType[5];
         int res= fscanf(file, "%s", lineType);
@@ -35,18 +38,30 @@ vector<float> Loader::loadObjFile(const char * path) {
         }
 
         if (strcmp(lineType, "v") == 0) {
-            glm::vec3 vertex;
+            vec3 vertex;
             fscanf(file, "%f %f %f\n", &vertex.x, &vertex.y, &vertex.z);
             vertices.push_back(vertex);
-            normals.push_back(vertex);
         } else if (strcmp(lineType, "f") == 0) {
             unsigned int vertexIndex[3];
-            int matches = fscanf(file, "%d %d %d\n", &vertexIndex[0], &vertexIndex[1], &vertexIndex[2]);
+            int matches = fscanf(file, "%d %d %d\n", &vertexIndex[0],
+             &vertexIndex[1], &vertexIndex[2]);
 
             if (matches != 3) {
                 printf("There was not the expected number of indexes");
-                return false;
+                openFile = false;
+                break;
             }
+
+            vec3 v0 = vertices.at(vertexIndex[0]);
+            vec3 v1 = vertices.at(vertexIndex[1]);
+            vec3 v2 = vertices.at(vertexIndex[2]);
+
+            vec3 edge1 = v1 - v0;
+            vec3 edge2 = v2 - v0;
+
+            vec3 normal = cross(edge1, edge2);
+            normal = normalize(normal);
+
 
             vertexIndices.push_back(vertexIndex[0]);
             vertexIndices.push_back(vertexIndex[1]);

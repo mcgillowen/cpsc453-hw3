@@ -1,6 +1,8 @@
 // IndexedVertexArray.hpp
 // A class holding a Indexed Vertex Array, sub class of VertexArray
 
+#include "IndexedVertexArray.hpp"
+
 IndexedVertexArray::IndexedVertexArray( int c ) : VertexArray( c ), elementbuffer(0) {
 }
 
@@ -14,4 +16,3 @@ void IndexedVertexArray::addIndexBuffer( vector<unsigned int> indices ) {
 IndexedVertexArray::~IndexedVertexArray() {
     // do proper cleanup.
 }
-

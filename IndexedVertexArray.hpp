@@ -4,7 +4,7 @@
 #ifndef INDEXED_VERTEX_ARRAY_HPP
 #define INDEXED_VERTEX_ARRAY_HPP
 
-#include <vector>
+#include "VertexArray.hpp"
 
 #define GLFW_INCLUDE_GLCOREARB
 #define GL_GLEXT_PROTOTYPES
@@ -21,3 +21,5 @@ public:
 	virtual ~IndexedVertexArray();
 
 };
+
+#endif // INDEXED_VERTEX_ARRAY_HPP
