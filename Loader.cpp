@@ -62,6 +62,7 @@ vector<float> Loader::loadObjFile(const char * path) {
             vec3 normal = cross(edge1, edge2);
             normal = normalize(normal);
 
+            normals.push_back(normal);
 
             vertexIndices.push_back(vertexIndex[0]);
             vertexIndices.push_back(vertexIndex[1]);
