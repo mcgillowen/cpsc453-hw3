@@ -1,0 +1,7 @@
+viewer: viewer.o
+	g++ -std=c++14 -o test viewer.o `pkg-config --static --libs glfw3 gl`
+viewer.o: viewer.cpp
+	g++ -std=c++14 -c viewer.cpp `pkg-config --static --libs glfw3 gl`
+
+clean:
+	rm viewer viewer.o
