@@ -3,7 +3,7 @@
 
 #include "IndexedVertexArray.hpp"
 
-IndexedVertexArray::IndexedVertexArray( int c ) : VertexArray( c ), elementbuffer(0) {
+IndexedVertexArray::IndexedVertexArray( int c, int numberOfFaces ) : VertexArray( c ), elementbuffer(0), numFaces(numberOfFaces) {
 }
 
 void IndexedVertexArray::addIndexBuffer( vector<unsigned int> indices ) {

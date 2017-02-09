@@ -5,6 +5,7 @@
 #define LOADER_HPP
 
 #include <vector>
+#include "IndexedVertexArray.hpp"
 
 #include <glm/glm.hpp>
 #include <glm/gtx/transform.hpp>
@@ -16,7 +17,7 @@ class Loader {
     private:
 
     public:
-        static vector<float> loadObjFile(const char * path);
+        static IndexedVertexArray* loadObjFile(const char * path);
 };
 
 #endif // LOADER_HPP

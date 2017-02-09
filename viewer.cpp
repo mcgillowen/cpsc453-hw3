@@ -20,7 +20,7 @@ using std::cerr;
 using std::endl;
 
 
-void render(Program& program, IndexedVertexArray& va, int numTriangles )
+void render(Program& program, IndexedVertexArray& va)
 {
 	// enable depth test and clear screen to a dark grey colour
 	glEnable( GL_DEPTH_TEST );
@@ -54,7 +54,7 @@ void render(Program& program, IndexedVertexArray& va, int numTriangles )
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, va.elementbuffer);
 
 	//glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
-	glDrawElements(GL_TRIANGLES, 3*numTriangles, GL_UNSIGNED_INT, (void*)0);
+	glDrawElements(GL_TRIANGLES, 3*va.numFaces, GL_UNSIGNED_INT, (void*)0);
 
 
 	glBindVertexArray(0);
@@ -82,7 +82,7 @@ int main(int argc, char *argv[])
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-	window = glfwCreateWindow(512, 512, "CPSC 453: Sphere with Goroud shading", 0, 0);
+	window = glfwCreateWindow(512, 512, "OBJ Viewer", 0, 0);
 	if (!window) {
 		cout << "Program failed to create GLFW window, TERMINATING" << endl;
 		glfwTerminate();
@@ -93,16 +93,13 @@ int main(int argc, char *argv[])
 
 
   Program p("vertex.glsl","fragment.glsl");
-  int M = 50;
-  int N = 50;
-  generateSphere(M, N);
-  int numTriangles = 2*(M-1)*(N-1);
+  IndexedVertexArray* va = Loader::loadObjFile("test.obj");
 
 	// run an event-triggered main loop
 	while (!glfwWindowShouldClose(window))
 	{
     // render
-		render(p, (*va), numTriangles);
+		render(p, (*va));
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();

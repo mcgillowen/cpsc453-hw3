@@ -14,13 +14,14 @@ using std::printf;
 using namespace glm;
 
 
-IndexedVertexArray Loader::loadObjFile(const char * path) {
+IndexedVertexArray* Loader::loadObjFile(const char * path) {
 
     vector<float> vertices;
     vector<unsigned int> vertexIndices;
     vector<float> normals;
 
     int numVertices = 0;
+    int numFaces = 0;
 
     bool openFile = true;
 
@@ -57,9 +58,11 @@ IndexedVertexArray Loader::loadObjFile(const char * path) {
                 break;
             }
 
-            vec3 v0 = vertices.at(vertexIndex[0]);
-            vec3 v1 = vertices.at(vertexIndex[1]);
-            vec3 v2 = vertices.at(vertexIndex[2]);
+            numFaces++;
+
+            vec3 v0 = vec3(vertices.at(vertexIndex[0]), vertices.at(vertexIndex[0] + 1),  vertices.at(vertexIndex[0] + 2));
+            vec3 v1 = vec3(vertices.at(vertexIndex[1]), vertices.at(vertexIndex[1] + 1),  vertices.at(vertexIndex[1] + 2));
+            vec3 v2 = vec3(vertices.at(vertexIndex[2]), vertices.at(vertexIndex[2] + 1),  vertices.at(vertexIndex[2] + 2));
 
             vec3 edge1 = v1 - v0;
             vec3 edge2 = v2 - v0;
@@ -77,7 +80,7 @@ IndexedVertexArray Loader::loadObjFile(const char * path) {
         }
     }
 
-    IndexedVertexArray* va = new IndexedVertexArray(numVertices);
+    IndexedVertexArray* va = new IndexedVertexArray(numVertices, numFaces);
 
     va->addBuffer("vertices", 0, vertices);
     va->addBuffer("normals", 1, normals);

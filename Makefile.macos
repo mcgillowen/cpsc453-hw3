@@ -1,5 +1,5 @@
 viewer: viewer.o Loader.o VertexArray.o IndexedVertexArray.o Program.o
-	g++ -std=c++14 -o test viewer.o Loader.o VertexArray.o IndexedVertexArray.o Program.o -framework OpenGL `pkg-config --static --libs glfw3`
+	g++ -std=c++14 -o viewer viewer.o Loader.o VertexArray.o IndexedVertexArray.o Program.o -framework OpenGL `pkg-config --static --libs glfw3`
 
 viewer.o: viewer.cpp
 	g++ -std=c++14 -c viewer.cpp -framework OpenGL `pkg-config --static --libs glfw3`
