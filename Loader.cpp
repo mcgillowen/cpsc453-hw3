@@ -14,11 +14,13 @@ using std::printf;
 using namespace glm;
 
 
-vector<float> Loader::loadObjFile(const char * path) {
+IndexedVertexArray Loader::loadObjFile(const char * path) {
 
-    vector<vec3> vertices;
+    vector<float> vertices;
     vector<unsigned int> vertexIndices;
-    vector<vec3> normals;
+    vector<float> normals;
+
+    int numVertices = 0;
 
     bool openFile = true;
 
@@ -40,7 +42,10 @@ vector<float> Loader::loadObjFile(const char * path) {
         if (strcmp(lineType, "v") == 0) {
             vec3 vertex;
             fscanf(file, "%f %f %f\n", &vertex.x, &vertex.y, &vertex.z);
-            vertices.push_back(vertex);
+            numVertices++;
+            vertices.push_back(vertex.x);
+            vertices.push_back(vertex.y);
+            vertices.push_back(vertex.z);
         } else if (strcmp(lineType, "f") == 0) {
             unsigned int vertexIndex[3];
             int matches = fscanf(file, "%d %d %d\n", &vertexIndex[0],
@@ -62,11 +67,22 @@ vector<float> Loader::loadObjFile(const char * path) {
             vec3 normal = cross(edge1, edge2);
             normal = normalize(normal);
 
-            normals.push_back(normal);
+            normals.push_back(normal.x);
+            normals.push_back(normal.y);
+            normals.push_back(normal.z);
 
             vertexIndices.push_back(vertexIndex[0]);
             vertexIndices.push_back(vertexIndex[1]);
             vertexIndices.push_back(vertexIndex[2]);
         }
     }
+
+    IndexedVertexArray* va = new IndexedVertexArray(numVertices);
+
+    va->addBuffer("vertices", 0, vertices);
+    va->addBuffer("normals", 1, normals);
+
+    va->addIndexBuffer(vertexIndices);
+
+    return va;
 }

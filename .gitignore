@@ -38,3 +38,7 @@
 # End of https://www.gitignore.io/api/c++
 
 .vscode/
+
+GPATH
+GRTAGS
+GTAGS

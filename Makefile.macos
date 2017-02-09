@@ -1,17 +1,20 @@
-viewer: viewer.o Loader.o VertexArray.o IndexedVertexArray.o
-	g++ -std=c++14 -o test viewer.o Loader.o VertexArray.o IndexedVertexArray.o -framework OpenGL `pkg-config --static --libs glfw3`
+viewer: viewer.o Loader.o VertexArray.o IndexedVertexArray.o Program.o
+	g++ -std=c++14 -o test viewer.o Loader.o VertexArray.o IndexedVertexArray.o Program.o -framework OpenGL `pkg-config --static --libs glfw3`
 
 viewer.o: viewer.cpp
 	g++ -std=c++14 -c viewer.cpp -framework OpenGL `pkg-config --static --libs glfw3`
 
 Loader.o: Loader.cpp
 	g++ -std=c++14 -c Loader.cpp -framework OpenGL `pkg-config --static --libs glfw3`
-	
+
 VertexArray.o: VertexArray.cpp
 	g++ -std=c++14 -c VertexArray.cpp -framework OpenGL `pkg-config --static --libs glfw3`
-	
+
 IndexedVertexArray.o: IndexedVertexArray.cpp
-	g++ -std=c++14 -c IndexedVertexArray.cpp `-framework OpenGL `pkg-config --static --libs glfw3`
+	g++ -std=c++14 -c IndexedVertexArray.cpp -framework OpenGL `pkg-config --static --libs glfw3`
+
+Program.o: Program.cpp
+	g++ -std=c++14 -c Program.cpp -framework OpenGL `pkg-config --static --libs glfw3`
 
 clean:
-	rm viewer viewer.o Loader.o VertexArray.o IndexedVertexArray.o
+	rm viewer viewer.o Loader.o VertexArray.o IndexedVertexArray.o Program.o
