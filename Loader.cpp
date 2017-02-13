@@ -17,11 +17,11 @@ using namespace glm;
 IndexedVertexArray* Loader::loadObjFile(const char * path) {
 
     vector<float> vertices;
-    vertices.push_back(0.0f); // correct indexing since OBJ indexing starts at 1
-    vertices.push_back(0.0f);
-    vertices.push_back(0.0f);
     vector<unsigned int> vertexIndices;
     vector<float> normals;
+
+    vector<vec4> tempVertices;
+    vector<vec3> tempNormals;
 
     int numVertices = 0;
     int numFaces = 0;
@@ -47,9 +47,7 @@ IndexedVertexArray* Loader::loadObjFile(const char * path) {
             vec3 vertex;
             fscanf(file, "%f %f %f\n", &vertex.x, &vertex.y, &vertex.z);
             numVertices++;
-            vertices.push_back(vertex.x);
-            vertices.push_back(vertex.y);
-            vertices.push_back(vertex.z);
+            tempVertices.push_back(vec4(vertex, 1.0));
         } else if (strcmp(lineType, "f") == 0) {
             unsigned int vertexIndex[3];
             int matches = fscanf(file, "%d %d %d\n", &vertexIndex[0],
@@ -61,30 +59,40 @@ IndexedVertexArray* Loader::loadObjFile(const char * path) {
                 break;
             }
 
+            vertexIndices.push_back(vertexIndex[0] - 1);
+            vertexIndices.push_back(vertexIndex[1] - 1);
+            vertexIndices.push_back(vertexIndex[2] - 1);
+
             numFaces++;
-
-            vec3 v0 = vec3(vertices.at(vertexIndex[0]), vertices.at(vertexIndex[0] + 1),  vertices.at(vertexIndex[0] + 2));
-            vec3 v1 = vec3(vertices.at(vertexIndex[1]), vertices.at(vertexIndex[1] + 1),  vertices.at(vertexIndex[1] + 2));
-            vec3 v2 = vec3(vertices.at(vertexIndex[2]), vertices.at(vertexIndex[2] + 1),  vertices.at(vertexIndex[2] + 2));
-
-            vec3 edge1 = v1 - v0;
-            vec3 edge2 = v2 - v0;
-
-            vec3 normal = cross(edge1, edge2);
-            normal = normalize(normal);
-
-            normals.push_back(normal.x);
-            normals.push_back(normal.y);
-            normals.push_back(normal.z);
-
-            vertexIndices.push_back(vertexIndex[0]);
-            vertexIndices.push_back(vertexIndex[1]);
-            vertexIndices.push_back(vertexIndex[2]);
         }
     }
 
-    //Figure out how to get the normals for every vertex averaging the normals
-    //of the faces connected to the vertex
+    tempNormals.resize(tempVertices.size(), vec3(0.0, 0.0, 0.0));
+    for (int i = 0; i < vertexIndices.size(); i += 3) {
+      unsigned int indexA = vertexIndices[i];
+      unsigned int indexB = vertexIndices[i + 1];
+      unsigned int indexC = vertexIndices[i + 2];
+
+      vec3 normal = normalize(cross(
+        vec3(tempVertices[indexB]) - vec3(tempVertices[indexA]),
+        vec3(tempVertices[indexC]) - vec3(tempVertices[indexA])
+      ));
+
+      tempNormals[indexA] = tempNormals[indexB] = tempNormals[indexC] = normal;
+    }
+
+    for (int i = 0; i < tempVertices.size(); i++) {
+      vertices.push_back(tempVertices[i].x);
+      vertices.push_back(tempVertices[i].y);
+      vertices.push_back(tempVertices[i].z);
+      vertices.push_back(tempVertices[i].w);
+    }
+
+    for (int i = 0; i < tempNormals.size(); i++) {
+      normals.push_back(tempNormals[i].x);
+      normals.push_back(tempNormals[i].y);
+      normals.push_back(tempNormals[i].z);
+    }
 
     IndexedVertexArray* va = new IndexedVertexArray(numVertices, numFaces);
 
