@@ -27,15 +27,15 @@ void VertexArray::addBuffer(string name, int index, vector<float> buffer) {
     glBindVertexArray(0);
 }
 
-void VertexArray::addBoundingDimensions(float minX, float maxX,
-                                        float minY, float maxY,
-                                        float minZ, float maxZ) {
-    this->minX = minX;
-    this->minY = minY;
-    this->minZ = minZ;
-    this->maxX = maxX;
-    this->maxY = maxY;
-    this->maxZ = maxZ;
+void VertexArray::addBoundingDimensions(float min_X, float max_X,
+                                        float min_Y, float max_Y,
+                                        float min_Z, float max_Z) {
+    minX = min_X;
+    minY = min_Y;
+    minZ = min_Z;
+    maxX = max_X;
+    maxY = max_Y;
+    maxZ = max_Z;
 }
 
 void VertexArray::updateBuffer(string name, vector<float> buffer) {

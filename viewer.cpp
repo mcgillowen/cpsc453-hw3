@@ -93,7 +93,7 @@ int main(int argc, char *argv[])
 
 
   Program p("vertex.glsl","fragment.glsl");
-  IndexedVertexArray* va = Loader::loadObjFile(argv[1]);
+  IndexedVertexArray* va = Loader::loadObjFile("buddha.obj");
 
 	// run an event-triggered main loop
 	while (!glfwWindowShouldClose(window))
