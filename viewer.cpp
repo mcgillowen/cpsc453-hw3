@@ -25,7 +25,7 @@ void render(Program& program, IndexedVertexArray& va)
 	// enable depth test and clear screen to a dark grey colour
 	glEnable( GL_DEPTH_TEST );
 	glDepthFunc(GL_LESS);
-	glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
+	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glUseProgram(program.id);
@@ -54,7 +54,7 @@ void render(Program& program, IndexedVertexArray& va)
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, va.elementbuffer);
 
 	//glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
-	glDrawElements(GL_TRIANGLES, 3*va.numFaces, GL_UNSIGNED_INT, (void*)0);
+	glDrawElements(GL_TRIANGLES, va.indices.size(), GL_UNSIGNED_INT, (void*)0);
 
 
 	glBindVertexArray(0);
@@ -93,7 +93,7 @@ int main(int argc, char *argv[])
 
 
   Program p("vertex.glsl","fragment.glsl");
-  IndexedVertexArray* va = Loader::loadObjFile("test.obj");
+  IndexedVertexArray* va = Loader::loadObjFile("buddha.obj");
 
 	// run an event-triggered main loop
 	while (!glfwWindowShouldClose(window))

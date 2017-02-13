@@ -17,6 +17,9 @@ using namespace glm;
 IndexedVertexArray* Loader::loadObjFile(const char * path) {
 
     vector<float> vertices;
+    vertices.push_back(0.0f); // correct indexing since OBJ indexing starts at 1
+    vertices.push_back(0.0f);
+    vertices.push_back(0.0f);
     vector<unsigned int> vertexIndices;
     vector<float> normals;
 
@@ -79,6 +82,9 @@ IndexedVertexArray* Loader::loadObjFile(const char * path) {
             vertexIndices.push_back(vertexIndex[2]);
         }
     }
+
+    //Figure out how to get the normals for every vertex averaging the normals
+    //of the faces connected to the vertex
 
     IndexedVertexArray* va = new IndexedVertexArray(numVertices, numFaces);
 

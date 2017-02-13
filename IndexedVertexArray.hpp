@@ -14,6 +14,7 @@ class IndexedVertexArray : public VertexArray {
 public:
 	GLuint elementbuffer;
 	int numFaces;
+	vector<unsigned int> indices;
 
 	IndexedVertexArray( int c, int numberOfFaces );
 
