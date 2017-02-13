@@ -88,6 +88,21 @@ IndexedVertexArray* Loader::loadObjFile(const char * path) {
       vertices.push_back(tempVertices[i].w);
     }
 
+    // float minX, minY, minZ, maxX, maxY, maxZ;
+
+    // minX = maxX = tempVertices[0].x;
+    // minY = maxY = tempVertices[0].y;
+    // minZ = maxZ = tempVertices[0].z;
+
+    // for (int i = 0; i < tempVertices.size(); i++) {
+    //   if (tempVertices[i].x < minX) minX = tempVertices[i].x;
+    //   if (tempVertices[i].x > maxX) maxX = tempVertices[i].x;
+    //   if (tempVertices[i].y < minY) minY = tempVertices[i].y;
+    //   if (tempVertices[i].y > maxY) maxY = tempVertices[i].y;
+    //   if (tempVertices[i].z < minZ) minZ = tempVertices[i].z;
+    //   if (tempVertices[i].z > maxZ) maxZ = tempVertices[i].z;
+    // }
+
     for (int i = 0; i < tempNormals.size(); i++) {
       normals.push_back(tempNormals[i].x);
       normals.push_back(tempNormals[i].y);
@@ -98,7 +113,7 @@ IndexedVertexArray* Loader::loadObjFile(const char * path) {
 
     va->addBuffer("vertices", 0, vertices);
     va->addBuffer("normals", 1, normals);
-
+    //va->addBoundingDimensions(minX, minY, minZ, maxX, maxY, maxZ);
     va->addIndexBuffer(vertexIndices);
 
     return va;

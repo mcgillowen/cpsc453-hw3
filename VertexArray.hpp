@@ -22,10 +22,14 @@ class VertexArray {
     public:
         GLuint id;
         unsigned int count;
-
+        float minX, minY, minZ, maxX, maxY, maxZ;
 
         VertexArray(int c);
         void addBuffer(string name, int index, vector<float> buffer);
+
+        void addBoundingDimensions(float minX, float maxX,
+                                   float minY, float maxY,
+                                   float minZ, float maxZ);
 
         void updateBuffer(string name, vector<float> buffer);
         virtual ~VertexArray();

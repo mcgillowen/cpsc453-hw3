@@ -27,6 +27,17 @@ void VertexArray::addBuffer(string name, int index, vector<float> buffer) {
     glBindVertexArray(0);
 }
 
+void VertexArray::addBoundingDimensions(float minX, float maxX,
+                                        float minY, float maxY,
+                                        float minZ, float maxZ) {
+    this->minX = minX;
+    this->minY = minY;
+    this->minZ = minZ;
+    this->maxX = maxX;
+    this->maxY = maxY;
+    this->maxZ = maxZ;
+}
+
 void VertexArray::updateBuffer(string name, vector<float> buffer) {
     glBindBuffer(GL_ARRAY_BUFFER, buffers[name]);
     glBufferData(GL_ARRAY_BUFFER, buffer.size()*sizeof(float), buffer.data(), GL_STATIC_DRAW);
@@ -40,4 +51,3 @@ VertexArray::~VertexArray() {
     for(auto &ent: buffers)
         glDeleteBuffers(1, &ent.second);
 }
-
