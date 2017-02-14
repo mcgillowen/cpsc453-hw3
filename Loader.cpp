@@ -20,7 +20,8 @@ IndexedVertexArray* Loader::loadObjFile(const char * path) {
     vector<unsigned int> vertexIndices;
     vector<float> normals;
 
-    vector<vec4> tempVertices;
+    vector<vec3> tempVertices;
+    vector<vec3> tempFaceNormals;
     vector<vec3> tempNormals;
 
     int numVertices = 0;
@@ -47,7 +48,7 @@ IndexedVertexArray* Loader::loadObjFile(const char * path) {
             vec3 vertex;
             fscanf(file, "%f %f %f\n", &vertex.x, &vertex.y, &vertex.z);
             numVertices++;
-            tempVertices.push_back(vec4(vertex, 1.0));
+            tempVertices.push_back(vec3(vertex));
         } else if (strcmp(lineType, "f") == 0) {
             unsigned int vertexIndex[3];
             int matches = fscanf(file, "%d %d %d\n", &vertexIndex[0],
@@ -67,7 +68,7 @@ IndexedVertexArray* Loader::loadObjFile(const char * path) {
         }
     }
 
-    tempNormals.resize(tempVertices.size(), vec3(0.0, 0.0, 0.0));
+    tempFaceNormals.resize(tempVertices.size(), vec3(0.0, 0.0, 0.0));
     for (int i = 0; i < vertexIndices.size(); i += 3) {
       unsigned int indexA = vertexIndices[i];
       unsigned int indexB = vertexIndices[i + 1];
@@ -78,14 +79,30 @@ IndexedVertexArray* Loader::loadObjFile(const char * path) {
         vec3(tempVertices[indexC]) - vec3(tempVertices[indexA])
       ));
 
-      tempNormals[indexA] = tempNormals[indexB] = tempNormals[indexC] = normal;
+      tempFaceNormals[indexA] = tempFaceNormals[indexB] = tempFaceNormals[indexC] = normal;
     }
+
+
+    // for (int i = 0; i < tempVertices.size(); i++) {
+    //     vec3 normal = vec3(0.0, 0.0, 0.0);
+
+    //     for(int j = 0; j < vertexIndices.size(); i++) {
+
+    //         if (vertexIndices[j] == i) {
+
+    //             normal += tempFaceNormals[i];
+
+    //         }
+
+    //     }
+
+    //     tempNormals.push_back(normalize(normal));
+    // }
 
     for (int i = 0; i < tempVertices.size(); i++) {
       vertices.push_back(tempVertices[i].x);
       vertices.push_back(tempVertices[i].y);
       vertices.push_back(tempVertices[i].z);
-      vertices.push_back(tempVertices[i].w);
     }
 
     float minX, minY, minZ, maxX, maxY, maxZ;
@@ -106,18 +123,20 @@ IndexedVertexArray* Loader::loadObjFile(const char * path) {
       if (tempVertices[i].z > maxZ) maxZ = tempVertices[i].z;
     }
 
-    for (int i = 0; i < tempNormals.size(); i++) {
-      normals.push_back(tempNormals[i].x);
-      normals.push_back(tempNormals[i].y);
-      normals.push_back(tempNormals[i].z);
+    for (int i = 0; i < tempFaceNormals.size(); i++) {
+      normals.push_back(tempFaceNormals[i].x);
+      normals.push_back(tempFaceNormals[i].y);
+      normals.push_back(tempFaceNormals[i].z);
     }
 
     IndexedVertexArray* va = new IndexedVertexArray(numVertices, numFaces);
 
     va->addBuffer("vertices", 0, vertices);
     va->addBuffer("normals", 1, normals);
-    va->addBoundingDimensions(minX, minY, minZ, maxX, maxY, maxZ);
+
     va->addIndexBuffer(vertexIndices);
+
+    va->addBoundingDimensions(minX, minY, minZ, maxX, maxY, maxZ);
 
     return va;
 }

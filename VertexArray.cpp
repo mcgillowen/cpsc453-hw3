@@ -36,6 +36,9 @@ void VertexArray::addBoundingDimensions(float min_X, float max_X,
     maxX = max_X;
     maxY = max_Y;
     maxZ = max_Z;
+
+    center = glm::vec4((maxX - minX)/2.0, (maxY - minY)/2.0, (maxZ - minZ)/2.0, 1.0);
+    size = glm::vec3(maxX - minX, maxY - minY, maxZ - minZ);
 }
 
 void VertexArray::updateBuffer(string name, vector<float> buffer) {

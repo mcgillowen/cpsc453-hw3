@@ -25,7 +25,7 @@ void render(Program& program, IndexedVertexArray& va)
 	// enable depth test and clear screen to a dark grey colour
 	glEnable( GL_DEPTH_TEST );
 	glDepthFunc(GL_LESS);
-	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+	glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glUseProgram(program.id);
@@ -92,8 +92,10 @@ int main(int argc, char *argv[])
 	glfwMakeContextCurrent(window);
 
 
-  Program p("vertex.glsl","fragment.glsl");
-  IndexedVertexArray* va = Loader::loadObjFile("buddha.obj");
+  	Program p("vertex.glsl","fragment.glsl");
+  	IndexedVertexArray* va = Loader::loadObjFile("dodecahedron.obj");
+
+	cout << "Finished reading" << endl;
 
 	// run an event-triggered main loop
 	while (!glfwWindowShouldClose(window))

@@ -3,28 +3,29 @@
 layout(location = 0) in vec3 position;
 layout(location = 1) in vec3 normal;
 
-out vec3 color;
+// Inputs from vertex shader
+out VS_OUT
+{
+    vec3 N;
+    vec3 L;
+    vec3 V;
+} vs_out;
 
 uniform mat4x4 M;
 uniform mat4x4 V;
 uniform mat4x4 P;
 
-uniform float time;
+uniform vec3 light = vec3(1,1,1);
 
 void main() {
 
-    // Define a light direction in eye space
-    vec3 L = normalize(vec3(0.5,0.5,1));
-    
-    // intensity of the light
-    vec3 I = vec3(0.2,0.2,1.0);
-    
-  vec3 normal_eye = normalize((V * M * vec4(normal, 0)).xyz);
-    
-  vec3 ambient = vec3(0.1,0.1,0.1);
-  vec3 diffuse = I * clamp( dot(normal_eye, L), 0, 1 );
-  color = ambient + diffuse;
-    
+    vec4 Pos = V * M * vec4(position, 1.0);
 
-  gl_Position = P*V*M*vec4(position, 1.0);
+    vs_out.N = mat3(M) * normal;
+
+    vs_out.L = light - Pos.xyz;
+
+    vs_out.V = -Pos.xyz;
+
+    gl_Position = P * Pos;
 }

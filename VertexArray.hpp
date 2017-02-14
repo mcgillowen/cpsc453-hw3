@@ -12,6 +12,9 @@
 #define GL_GLEXT_PROTOTYPES
 #include <GLFW/glfw3.h>
 
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+
 using std::vector;
 using std::map;
 using std::string;
@@ -23,6 +26,8 @@ class VertexArray {
         GLuint id;
         unsigned int count;
         float minX, minY, minZ, maxX, maxY, maxZ;
+        glm::vec4 center;
+        glm::vec3 size;
 
         VertexArray(int c);
         void addBuffer(string name, int index, vector<float> buffer);
