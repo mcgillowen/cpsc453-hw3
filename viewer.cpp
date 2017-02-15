@@ -93,7 +93,7 @@ int main(int argc, char *argv[])
 
 
   	Program p("vertex.glsl","fragment.glsl");
-  	IndexedVertexArray* va = Loader::loadObjFile("dodecahedron.obj");
+  	IndexedVertexArray* va = Loader::loadObjFile("buddha.obj");
 
 	cout << "Finished reading" << endl;
 
