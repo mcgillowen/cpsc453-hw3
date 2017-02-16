@@ -1,0 +1,94 @@
+Instructions
+This assignment will be marked out of 30 points.
+
+There are two parts to this assignment. Part I contains some exercises that are designed to test your conceptual understanding of the course material. Part II asks you to write a 3D model viewer that will give you a chance to load and manage geometry and shaders in a 3D OpenGL context.
+
+You are to work on this assignment individually. There is no email submission for this assignment. In order to make the grading process easier, please read the submission instructions carefully.
+
+Part I (10 points)
+
+Please complete the following exercises, showing all the steps and work you do to arrive at the solution. You can handwrite your solutions and drop them in your TA's mailbox outside MS 239 before the due date. Optionally, you can submit the solutions as a PDF file (scanned or electronic version) together with Part II. If you choose to handwrite, please write clearly and legibly.
+
+(2 points)
+What is the 3x3 rotation matrix that rotates about the axis (1/3‾√,1/3‾√,1/3‾√)through an angle θ.?
+
+(3 points)
+Given a triangle in 3D with vertices p=(p1,p2,p3),q=(q1,q2,q3),r=(r1,r2,r3) , what are the components  of the vector that is normal to the triangle? Please write your answer in terms of the components of the vertices p,q,r. You can assume a counterclockwise winding for the vertices.
+
+(3 points)
+In class, we determined the viewing transformation matrix for left-handed viewing. Please derive the 4x4 transformation matrix ( that converts world coordinates to camera coordinates) corresponding to right-handed viewing. Assume that the camera is located at the point C, is looking at the point P, and has an inclination vector V.
+
+(2 points)
+If ωi is the unit vector along the direction of incidence, and n is the unit vector normal to a point P on the surface, show that the specular reflection unit vector is given by
+vs=2⟨ωi,n⟩n−ωi
+.
+
+
+
+
+Part II (20 points + 6 bonus)
+
+OBJ Model Viewer
+
+In this part, you will write an OpenGL program to view 3D OBJ models. OBJ is a simple and popular file format that is widely used to describe 3D models. An OBJ file stores data such as vertex coordinates, face indices, normals, texture coordinates etc. More details about the file format are available on its Wikipedia page.
+
+For this assignment, we will focus on two attributes: vertices and triangular faces; i.e. we will only work with models that are represented as triangle meshes. In OBJ files, these attributes are represented with the qualifiers 'v' (for vertices) and 'f' (for faces). You can safely assume that these two qualifiers will always be present in the OBJ files that are used with your program.
+
+In order to render a 3D model with lighting, we also need vertex normals. Normals are sometimes also available in OBJ files. However, for this assignment, we will compute vertex normals by averaging adjacent face normals. Since all faces are triangular, the face normals are uniquely defined. Your program must compute its own normals.
+
+Please write an OBJ file viewer with the following minimum functionality:
+
+It reads and parses an OBJ file specified as a command line argument.
+It renders the model so that it is completely visible in a resizable viewport.
+It implements perspective viewing.
+It provides intrinsic rotation and scaling controls.
+It implements Phong shading for lighting.
+Functional Requirements (16 points)
+
+File Reading (3 points): Please implement a file reader that reads in vertices and face indices from the OBJ file. Use this information to compute vertex normals. Store your geometry in Vertex Buffer Objects so that it can be passed to the shader.
+Viewing (4 points): Compute the model's bounding box and place your camera so that the bounding box is completely inside the view volume. Center your model within the view volume ensuring that it does not get clipped. You may want to make the view volume larger than the bounding box so that the user has some room to scale and rotate the model. Please implement perspective viewing. The model should be completely visible inside the view volume.
+Affine Transformations (5 points): Implement the following modeling transformations through approriate user interactions: intrinsic rotations (yaw, pitch and roll) about the object's axes, and scaling (to uniformly scale the model). Recall that intrinsic rotations always rotate an object about its own axes.
+Lighting (4 points):  Please implement Phong shading with ambient lighting and one point light. Your program can start with default material properties but you may wish to provide controls to change material properties.
+Some OBJ files that are compatible with your program are included below. Sample renderings are also shown.
+
+buddha.obj
+bunny.obj
+dragon.obj
+dodecahedron.obj
+
+buddha	bunny
+dragon	dodecahedron
+
+Hints and Suggestions
+
+Please start early! You will need to spend some time thinking about how you want to design your program. The coding effort involved is quite substantial as well.
+Please attend tutorials; TAs will be going over the GLM library, as well as how to implement transformations in the vertex shaders.
+When testing and debugging your program, please use small (in terms of number of triangles) models.  The bigger models can take some time to parse and setup.
+Some models may have very thin triangles. Computing normals for such triangles can lead to numerical problems. Please ensure that you are checking for a divide-by-zero condition when computing normals.
+Documentation and Source Code:
+
+Please provide a short README file (in txt format) that:
+
+Includes instructions on how to compile and run your program.
+Cites any code that is not your own (please see below).
+Lists all the features that have been implemented.
+
+
+Your program must be OpenGL 3.3+ compliant i.e. all transformations and lighting computations should be carried out in the shaders.
+Your program must compile and run in MS 239.
+The TAs will be distributing some sample code. You are free to extend this sample code but the extension should entirely be your own work.
+Demo (4 points):
+
+Your program will be tested and graded by your TA during a scheduled tutorial. Please be ready to demo your program to your TA who will also ask you some questions about design choices and algorithms you used in your implementation.
+
+Extra Credit: Camera Rotations (6 points)
+
+In order to see different views of a model, it is also possible to move the camera around the object. While there are many ways to do this, a simple approach is to imagine a spherical bounding box around the model and a perspective camera attached to the surface of this bounding box looking at the center of the sphere as pictured below. The image plane is parallel to the plane that is tangent to the sphere and the up vector points in the direction of the longitude.
+
+Please implement such a camera and provide controls to change the latitude and longitude of the camera so that it can freely move around the object.
+
+spherical camera
+
+Submission
+
+Please  submit all required files along with any other helper files that are needed to compile your program. The TAs will have access to the provided OBJ models so you don't have to submit model files. However, please include the shader files in your submission. Submit all the files (including your PDF file for Part I if applicable) as a single zip archive using the submission form at the bottom of this page.
