@@ -11,7 +11,7 @@
 #include <GLFW/glfw3.h>
 
 #include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtx/transform.hpp>
 
 using std::string;
 using std::vector;
@@ -19,6 +19,21 @@ using std::cout;
 using std::cerr;
 using std::endl;
 
+float pitchAngle = 0.0f;
+glm::vec3 pitchAxis = glm::vec3(1,0,0);
+glm::mat4 pitchMatrix = glm::rotate(pitchAngle, pitchAxis);
+
+float rollAngle = 0.0f;
+glm::vec3 rollAxis = glm::vec3(0,0,1);
+glm::mat4 rollMatrix = glm::rotate(rollAngle, rollAxis);
+
+float yawAngle = 0.0f;
+glm::vec3 yawAxis = glm::vec3(0,1,0);
+glm::mat4 yawMatrix = glm::rotate(yawAngle, yawAxis);
+
+float xValue = 0.0;
+float yValue = 0.0;
+float zValue = 0.0;
 
 void render(Program& program, IndexedVertexArray& va)
 {
@@ -35,9 +50,12 @@ void render(Program& program, IndexedVertexArray& va)
 	GLuint p_handle = glGetUniformLocation(program.id, "P");
 
 	// modeling matrix to rotate. Rotation angle is specified in degrees
-	glm::mat4 model = glm::rotate(glm::mat4(1.0f), 90.f, glm::vec3(1,0,0) );
+  glm::mat4 rotationMatrix = yawMatrix * pitchMatrix * rollMatrix;
+  glm::mat4 translationMatrix = glm::translate(glm::vec3(xValue, yValue, zValue));
+  glm::mat4 inverseTranslation = glm::inverse(translationMatrix);
+	glm::mat4 model = translationMatrix * rotationMatrix;
 	glm::mat4 view = glm::lookAt(
-	  glm::vec3(0,0,3), // Camera is here in world Space
+	  glm::vec3(0,0,5), // Camera is here in world Space
 	  glm::vec3(0,0,0), // and looks at the origin
 	  glm::vec3(0,1,0)  // Up direction is the y axis
 	);
@@ -63,6 +81,69 @@ void render(Program& program, IndexedVertexArray& va)
 
 }
 
+void pitchUp() {
+
+
+  pitchAngle += 1.0f;
+  pitchMatrix = glm::rotate(pitchAngle, pitchAxis);
+
+}
+
+void pitchDown() {
+
+  pitchAngle -= 1.0f;
+  pitchMatrix = glm::rotate(pitchAngle, pitchAxis);
+
+}
+
+void rollClockwise() {
+
+  rollAngle -= 1.0f;
+  rollMatrix = glm::rotate(rollAngle, rollAxis);
+
+}
+
+void rollCounterClockwise() {
+
+  rollAngle += 1.0f;
+  rollMatrix = glm::rotate(rollAngle, rollAxis);
+
+}
+
+void yawRight() {
+
+  yawAngle += 1.0f;
+  yawMatrix = glm::rotate(yawAngle, yawAxis);
+
+}
+
+void yawLeft() {
+
+  yawAngle -= 1.0f;
+  yawMatrix = glm::rotate(yawAngle, yawAxis);
+
+}
+
+void increaseX() {
+  xValue += 1.0f;
+}
+void decreaseX() {
+  xValue -= 1.0f;
+}
+
+void increaseY() {
+  yValue += 1.0f;
+}
+void decreaseY() {
+  yValue -= 1.0f;
+}
+
+void increaseZ() {
+  zValue += 1.0f;
+}
+void decreaseZ() {
+  zValue -= 1.0f;
+}
 
 int main(int argc, char *argv[])
 {
@@ -91,9 +172,50 @@ int main(int argc, char *argv[])
 
 	glfwMakeContextCurrent(window);
 
+  glfwSetKeyCallback(window,
+    [](GLFWwindow* window, int key, int scancode, int action, int mode){
+        //Rotation controls
+        if (key == GLFW_KEY_W && action == GLFW_PRESS) {
+          pitchUp();
+        }
+        if (key == GLFW_KEY_S && action == GLFW_PRESS) {
+          pitchDown();
+        }
+        if (key == GLFW_KEY_D && action == GLFW_PRESS) {
+          rollClockwise();
+        }
+        if (key == GLFW_KEY_A && action == GLFW_PRESS) {
+          rollCounterClockwise();
+        }
+        if (key == GLFW_KEY_E && action == GLFW_PRESS) {
+          yawRight();
+        }
+        if (key == GLFW_KEY_Q && action == GLFW_PRESS) {
+          yawLeft();
+        }
+        //Translation controls
+        if (key == GLFW_KEY_UP && action == GLFW_PRESS) {
+          increaseZ();
+        }
+        if (key == GLFW_KEY_DOWN && action == GLFW_PRESS) {
+          decreaseZ();
+        }
+        if (key == GLFW_KEY_LEFT && action == GLFW_PRESS) {
+          decreaseX();
+        }
+        if (key == GLFW_KEY_RIGHT && action == GLFW_PRESS) {
+          increaseX();
+        }
+        if (key == GLFW_KEY_PAGE_UP && action == GLFW_PRESS) {
+          increaseY();
+        }
+        if (key == GLFW_KEY_PAGE_DOWN && action == GLFW_PRESS) {
+          decreaseY();
+        }
 
+    });
   	Program p("vertex.glsl","fragment.glsl");
-  	IndexedVertexArray* va = Loader::loadObjFile("dodecahedron.obj");
+  	IndexedVertexArray* va = Loader::loadObjFile("buddha.obj");
 
 	cout << "Finished reading" << endl;
 
