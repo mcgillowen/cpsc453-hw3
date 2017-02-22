@@ -31,6 +31,9 @@ float yawAngle = 0.0f;
 glm::vec3 yawAxis = glm::vec3(0,1,0);
 glm::mat4 yawMatrix = glm::rotate(yawAngle, yawAxis);
 
+float scaleValue = 1.0f;
+glm::mat4 scaleMatrix = glm::scale(glm::vec3(scaleValue, scaleValue, scaleValue));
+
 float xValue = 0.0;
 float yValue = 0.0;
 float zValue = 0.0;
@@ -53,7 +56,7 @@ void render(Program& program, IndexedVertexArray& va)
   glm::mat4 rotationMatrix = yawMatrix * pitchMatrix * rollMatrix;
   glm::mat4 translationMatrix = glm::translate(glm::vec3(xValue, yValue, zValue));
   glm::mat4 inverseTranslation = glm::inverse(translationMatrix);
-	glm::mat4 model = translationMatrix * rotationMatrix;
+	glm::mat4 model = scaleMatrix * translationMatrix * rotationMatrix;
 	glm::mat4 view = glm::lookAt(
 	  glm::vec3(0,0,5), // Camera is here in world Space
 	  glm::vec3(0,0,0), // and looks at the origin
@@ -124,6 +127,16 @@ void yawLeft() {
 
 }
 
+void scaleDown() {
+  scaleValue -= 0.1f;
+  scaleMatrix = glm::scale(glm::vec3(scaleValue, scaleValue, scaleValue));
+}
+
+void scaleUp() {
+  scaleValue += 0.1f;
+  scaleMatrix = glm::scale(glm::vec3(scaleValue, scaleValue, scaleValue));
+}
+
 void increaseX() {
   xValue += 1.0f;
 }
@@ -143,6 +156,18 @@ void increaseZ() {
 }
 void decreaseZ() {
   zValue -= 1.0f;
+}
+
+void computeBoundingBox(glm::vec3 size, glm::vec4 center) {
+
+  xValue = center.x - 0.0f;
+  yValue = center.y - 0.0f;
+  zValue = center.z - 0.0f;
+
+  float sizeLength = glm::length(size);
+
+  scaleValue /= sizeLength;
+
 }
 
 int main(int argc, char *argv[])
@@ -213,9 +238,30 @@ int main(int argc, char *argv[])
           decreaseY();
         }
 
+        if (key == GLFW_KEY_J && action == GLFW_PRESS) {
+          scaleDown();
+        }
+        if (key == GLFW_KEY_K && action == GLFW_PRESS) {
+          scaleUp();
+        }
+
     });
+
+    glfwSetFramebufferSizeCallback(window, [](GLFWwindow* window, int width, int height)
+    {
+        glViewport(0, 0, width, height);
+    });
+
   	Program p("vertex.glsl","fragment.glsl");
-  	IndexedVertexArray* va = Loader::loadObjFile("buddha.obj");
+    IndexedVertexArray* va;
+    if (argc > 1) {
+      va = Loader::loadObjFile(argv[1]);
+    } else {
+      va = Loader::loadObjFile("buddha.obj");
+    }
+
+
+    computeBoundingBox(va->size, va->center);
 
 	cout << "Finished reading" << endl;
 
