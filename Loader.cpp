@@ -17,13 +17,17 @@ using namespace glm;
 IndexedVertexArray* Loader::loadObjFile(const char * path) {
 
     vector<float> vertices;
+    vector<float> texVertices;
     vector<unsigned int> vertexIndices;
+    vector<unsigned int> texIndices;
     vector<float> normals;
 
     vector<vec4> tempVertices;
+    vector<vec2> tempTexVertices;
     vector<vec3> tempNormals;
 
     int numVertices = 0;
+    int numTexVertices = 0;
     int numFaces = 0;
 
     bool openFile = true;
@@ -49,12 +53,18 @@ IndexedVertexArray* Loader::loadObjFile(const char * path) {
             numVertices++;
             tempVertices.push_back(vec4(vertex, 1.0));
             tempNormals.push_back(vec3(0.0,0.0,0.0));
+        } else if (strcmp(lineType, "vt") == 0) {
+            vec2 vertexTexture;
+            fscanf(file, "%f %f\n", &vertexTexture.x, &vertexTexture.y);
+            numTexVertices++;
+            tempTexVertices.push_back(vertexTexture);
         } else if (strcmp(lineType, "f") == 0) {
             unsigned int vertexIndex[3];
-            int matches = fscanf(file, "%d %d %d\n", &vertexIndex[0],
-             &vertexIndex[1], &vertexIndex[2]);
+            unsigned int textureIndex[3];
+            int matches = fscanf(file, "%d/%d %d/%d %d/%d\n", &vertexIndex[0], &textureIndex[0],
+             &vertexIndex[1], &textureIndex[1], &vertexIndex[2], &textureIndex[2]);
 
-            if (matches != 3) {
+            if (matches != 6) {
                 printf("There was not the expected number of indexes");
                 openFile = false;
                 break;
@@ -63,6 +73,10 @@ IndexedVertexArray* Loader::loadObjFile(const char * path) {
             vertexIndices.push_back(vertexIndex[0] - 1);
             vertexIndices.push_back(vertexIndex[1] - 1);
             vertexIndices.push_back(vertexIndex[2] - 1);
+
+            texIndices.push_back(textureIndex[0] - 1);
+            texIndices.push_back(textureIndex[1] - 1);
+            texIndices.push_back(textureIndex[2] - 1);
 
             numFaces++;
         }
@@ -89,6 +103,11 @@ IndexedVertexArray* Loader::loadObjFile(const char * path) {
       vertices.push_back(tempVertices[i].y);
       vertices.push_back(tempVertices[i].z);
       vertices.push_back(tempVertices[i].w);
+    }
+
+    for (int i = 0; i < tempTexVertices.size(); i++) {
+        texVertices.push_back(tempTexVertices[i].x);
+        texVertices.push_back(tempTexVertices[i].y);
     }
 
     float minX, minY, minZ, maxX, maxY, maxZ;
