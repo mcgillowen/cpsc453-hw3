@@ -25,11 +25,12 @@ class VertexArray {
     public:
         GLuint id;
         unsigned int count;
+      	int numFaces;
         float minX, minY, minZ, maxX, maxY, maxZ;
         glm::vec4 center;
         glm::vec3 size;
 
-        VertexArray(int c);
+        VertexArray(int c, int numberOfFaces);
         void addBuffer(string name, int index, vector<float> buffer);
 
         void addBoundingDimensions(float minX, float maxX,

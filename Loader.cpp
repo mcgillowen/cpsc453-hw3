@@ -14,7 +14,7 @@ using std::printf;
 using namespace glm;
 
 
-IndexedVertexArray* Loader::loadObjFile(const char * path) {
+VertexArray* Loader::loadObjFile(const char * path) {
 
     vector<float> vertices;
     vector<float> texVertices;
@@ -98,16 +98,25 @@ IndexedVertexArray* Loader::loadObjFile(const char * path) {
       tempNormals[indexC] += normal;
     }
 
-    for (int i = 0; i < tempVertices.size(); i++) {
-      vertices.push_back(tempVertices[i].x);
-      vertices.push_back(tempVertices[i].y);
-      vertices.push_back(tempVertices[i].z);
-      vertices.push_back(tempVertices[i].w);
-    }
+    for (int i = 0; i < vertexIndices.size(); i++) {
+      unsigned int vertexIndex = vertexIndices[i];
+      unsigned int textureIndex = texIndices[i];
 
-    for (int i = 0; i < tempTexVertices.size(); i++) {
-        texVertices.push_back(tempTexVertices[i].x);
-        texVertices.push_back(tempTexVertices[i].y);
+      vec4 vertex = tempVertices[vertexIndex];
+      vec2 texture = tempTexVertices[textureIndex];
+      vec3 normal = normalize(tempNormals[vertexIndex]);
+
+      vertices.push_back(vertex.x);
+      vertices.push_back(vertex.y);
+      vertices.push_back(vertex.z);
+      vertices.push_back(vertex.w);
+
+      texVertices.push_back(texture.x);
+      texVertices.push_back(texture.y);
+
+      normals.push_back(normal.x);
+      normals.push_back(normal.y);
+      normals.push_back(normal.z);
     }
 
     float minX, minY, minZ, maxX, maxY, maxZ;
@@ -128,19 +137,11 @@ IndexedVertexArray* Loader::loadObjFile(const char * path) {
       if (tempVertices[i].z > maxZ) maxZ = tempVertices[i].z;
     }
 
-    for (int i = 0; i < tempNormals.size(); i++) {
-      vec3 normal = normalize(tempNormals[i]);
-      normals.push_back(normal.x);
-      normals.push_back(normal.y);
-      normals.push_back(normal.z);
-    }
-
-    IndexedVertexArray* va = new IndexedVertexArray(numVertices, numFaces);
+    VertexArray* va = new VertexArray(numVertices, numFaces);
 
     va->addBuffer("vertices", 0, vertices);
     va->addBuffer("normals", 1, normals);
-    va->addBoundingDimensions(minX, minY, minZ, maxX, maxY, maxZ);
-    va->addIndexBuffer(vertexIndices);
+    va->addBuffer("textures", 2, texVertices);
 
     return va;
 }

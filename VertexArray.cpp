@@ -4,7 +4,7 @@
 #include "VertexArray.hpp"
 
 
-VertexArray::VertexArray(int c) : count(c){
+VertexArray::VertexArray(int c, int numberOfFaces) : count(c), numFaces(numberOfFaces){
     glGenVertexArrays(1, &id);
 }
 
