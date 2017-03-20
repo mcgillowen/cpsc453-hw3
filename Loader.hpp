@@ -7,7 +7,7 @@
 #include <vector>
 #include <cstdio>
 #include <cstring>
-#include "IndexedVertexArray.hpp"
+#include "VertexArray.hpp"
 
 #include <glm/glm.hpp>
 #include <glm/gtx/transform.hpp>

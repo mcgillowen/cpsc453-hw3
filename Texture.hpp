@@ -11,6 +11,7 @@
 #include <GLFW/glfw3.h>
 
 #include "ErrorChecking.hpp"
+#include "Program.hpp"
 
 class Texture {
 public:
@@ -19,8 +20,8 @@ public:
   int width;
   int height;
   Texture();
-  Texture(std::string filename, GLuint target = GL_TEXTURE_2D);
-  void init(std::string filename, GLuint target = GL_TEXTURE_2D);
+  Texture(std::string filename, Program& p, GLuint target = GL_TEXTURE_2D);
+  void init(std::string filename, Program& p, GLuint target = GL_TEXTURE_2D);
   ~Texture();
 };
 

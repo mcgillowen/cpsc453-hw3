@@ -11,11 +11,11 @@ using std::endl;
 
 Texture::Texture() {}
 
-Texture::Texture(std::string filename, GLuint target) {
-  init(filename, target);
+Texture::Texture(std::string filename, Program& p, GLuint target) {
+  init(filename, p, target);
 }
 
-void Texture::init(std::string filename, GLuint target) {
+void Texture::init(std::string filename, Program& p, GLuint target) {
   int numComponents;
   stbi_set_flip_vertically_on_load(true);
   unsigned char *data = stbi_load(filename.c_str(), &width, &height, &numComponents, 0);
@@ -34,6 +34,11 @@ void Texture::init(std::string filename, GLuint target) {
 
     glTexImage2D(target, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
 
+    //glActiveTexture(GL_TEXTURE0);
+    //glEnable(GL_TEXTURE_2D); // Enable it
+
+    glBindTexture(target, id);
+
     ErrorChecking::CheckGLErrors();
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -42,7 +47,12 @@ void Texture::init(std::string filename, GLuint target) {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
     glGenerateMipmap(GL_TEXTURE_2D);
 
-    glBindTexture(target, 0);
+
+    //GLuint hTexture = glGetUniformLocation(p.id, "image");
+    //glUniform1i(hTexture, 0);
+
+
+    //glBindTexture(target, 0);
     stbi_image_free(data);
 
     ErrorChecking::CheckGLErrors();
@@ -53,5 +63,3 @@ Texture::~Texture() {
   // glBindTexture(target, 0);
   // glDeleteTextures(1, &id);
 }
-
-

@@ -20,25 +20,17 @@ using std::map;
 using std::string;
 
 class VertexArray {
-    private:
-        std::map<string,GLuint> buffers;
-    public:
-        GLuint id;
-        unsigned int count;
-      	int numFaces;
-        float minX, minY, minZ, maxX, maxY, maxZ;
-        glm::vec4 center;
-        glm::vec3 size;
+  std::map<string,GLuint> buffers;
+public:
+  GLuint id;
+  unsigned int count;
 
-        VertexArray(int c, int numberOfFaces);
-        void addBuffer(string name, int index, vector<float> buffer, int components);
+  VertexArray();
+  VertexArray(int c);
+  void addBuffer(string name, int index, vector<float> buffer);
 
-        void addBoundingDimensions(float minX, float maxX,
-                                   float minY, float maxY,
-                                   float minZ, float maxZ);
-
-        void updateBuffer(string name, vector<float> buffer);
-        virtual ~VertexArray();
+  void updateBuffer(string name, vector<float> buffer);
+  virtual ~VertexArray();
 };
 
 #endif // VERTEX_ARRAY_HPP

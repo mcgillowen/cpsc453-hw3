@@ -14,7 +14,7 @@ using std::endl;
 using namespace glm;
 
 
-VertexArray* Loader::loadObjFile(const char * path) {
+VertexArray Loader::loadObjFile(const char * path) {
 
     vector<float> vertices;
     vector<float> texVertices;
@@ -22,7 +22,7 @@ VertexArray* Loader::loadObjFile(const char * path) {
     vector<unsigned int> texIndices;
     vector<float> normals;
 
-    vector<vec4> tempVertices;
+    vector<vec3> tempVertices;
     vector<vec2> tempTexVertices;
     vector<vec3> tempNormals;
 
@@ -46,18 +46,19 @@ VertexArray* Loader::loadObjFile(const char * path) {
         if (res == EOF) {
             break;
         }
-
-        if (strcmp(lineType, "v") == 0) {
-            vec3 vertex;
-            fscanf(file, "%f %f %f\n", &vertex.x, &vertex.y, &vertex.z);
-            numVertices++;
-            tempVertices.push_back(vec4(vertex, 1.0));
-            tempNormals.push_back(vec3(0.0,0.0,0.0));
-        } else if (strcmp(lineType, "vt") == 0) {
+        if (strcmp(lineType, "vt") == 0) {
             vec2 vertexTexture;
             fscanf(file, "%f %f\n", &vertexTexture.x, &vertexTexture.y);
             numTexVertices++;
+            //cout << vertexTexture.x << endl;
+            //cout << vertexTexture.y << endl;
             tempTexVertices.push_back(vertexTexture);
+        } else if (strcmp(lineType, "v") == 0) {
+            vec3 vertex;
+            fscanf(file, "%f %f %f\n", &vertex.x, &vertex.y, &vertex.z);
+            numVertices++;
+            tempVertices.push_back(vertex);
+            tempNormals.push_back(vec3(0.0,0.0,0.0));
         } else if (strcmp(lineType, "f") == 0) {
             unsigned int vertexIndex[3];
             unsigned int textureIndex[3];
@@ -74,9 +75,13 @@ VertexArray* Loader::loadObjFile(const char * path) {
             vertexIndices.push_back(vertexIndex[1] - 1);
             vertexIndices.push_back(vertexIndex[2] - 1);
 
+            //cout << "indices" << endl;
             texIndices.push_back(textureIndex[0] - 1);
+            //cout << textureIndex[0] << endl;
             texIndices.push_back(textureIndex[1] - 1);
+            //cout << textureIndex[1] << endl;
             texIndices.push_back(textureIndex[2] - 1);
+            //cout << textureIndex[2] << endl;
 
             numFaces++;
         }
@@ -102,17 +107,31 @@ VertexArray* Loader::loadObjFile(const char * path) {
       unsigned int vertexIndex = vertexIndices[i];
       unsigned int textureIndex = texIndices[i];
 
-      vec4 vertex = tempVertices[vertexIndex];
+      vec3 vertex = tempVertices[vertexIndex];
       vec2 texture = tempTexVertices[textureIndex];
       vec3 normal = normalize(tempNormals[vertexIndex]);
 
+      cout << "New loop" << endl;
+      cout << vertexIndex << endl;
+      cout << textureIndex << endl;
+
+      cout << "" << endl;
+
       vertices.push_back(vertex.x);
+      cout << vertex.x << endl;
       vertices.push_back(vertex.y);
+      cout << vertex.y << endl;
       vertices.push_back(vertex.z);
-      vertices.push_back(vertex.w);
+      cout << vertex.z << endl;
+      //vertices.push_back(vertex.w);
+      //cout << vertex.w << endl;
+
+      cout << "" << endl;
 
       texVertices.push_back(texture.x);
+      cout << texture.x << endl;
       texVertices.push_back(texture.y);
+      cout << texture.y << endl;
 
       normals.push_back(normal.x);
       normals.push_back(normal.y);
@@ -137,12 +156,12 @@ VertexArray* Loader::loadObjFile(const char * path) {
       if (tempVertices[i].z > maxZ) maxZ = tempVertices[i].z;
     }
 
-    VertexArray* va = new VertexArray(numVertices, numFaces);
+    VertexArray va = VertexArray(numVertices);
 
-    va->addBuffer("vertices", 0, vertices, 4);
-    va->addBuffer("normals", 1, normals, 3);
-    va->addBuffer("textures", 2, texVertices, 2);
-    va->addBoundingDimensions(minX, minY, minZ, maxX, maxY, maxZ);
+    va.addBuffer("vertices", 0, vertices);
+    va.addBuffer("normals", 1, normals);
+    va.addBuffer("textures", 2, texVertices);
+    //va->addBoundingDimensions(minX, minY, minZ, maxX, maxY, maxZ);
 
     return va;
 }

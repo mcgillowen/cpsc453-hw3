@@ -1,8 +1,8 @@
 all: viewer
 
 
-viewer: viewer.o Loader.o VertexArray.o IndexedVertexArray.o Program.o Texture.o
-	g++ -std=c++14 -g -o viewer viewer.o Loader.o VertexArray.o IndexedVertexArray.o Program.o Texture.o `pkg-config --static --libs glfw3 gl`
+viewer: viewer.o Loader.o VertexArray.o  Program.o Texture.o
+	g++ -std=c++14 -g -o viewer viewer.o Loader.o VertexArray.o  Program.o Texture.o `pkg-config --static --libs glfw3 gl`
 
 viewer.o: viewer.cpp
 	g++ -std=c++14 -g -c viewer.cpp `pkg-config --static --libs glfw3 gl`
@@ -13,9 +13,6 @@ Loader.o: Loader.cpp
 VertexArray.o: VertexArray.cpp
 	g++ -std=c++14 -g -c VertexArray.cpp `pkg-config --static --libs glfw3 gl`
 
-IndexedVertexArray.o: IndexedVertexArray.cpp
-	g++ -std=c++14 -g -c IndexedVertexArray.cpp `pkg-config --static --libs glfw3 gl`
-
 Program.o: Program.cpp
 	g++ -std=c++14 -g -c Program.cpp `pkg-config --static --libs glfw3 gl`
 
@@ -23,4 +20,4 @@ Texture.o: Texture.cpp
 	g++ -std=c++14 -g -c Texture.cpp `pkg-config --static --libs glfw3 gl`
 
 clean:
-	rm viewer viewer.o Loader.o VertexArray.o IndexedVertexArray.o Program.o Texture.o
+	rm viewer viewer.o Loader.o VertexArray.o  Program.o Texture.o

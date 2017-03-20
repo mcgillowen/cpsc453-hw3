@@ -2,7 +2,7 @@
 
 #include "Loader.hpp"
 #include "Program.hpp"
-#include "IndexedVertexArray.hpp"
+#include "VertexArray.hpp"
 #include "Texture.hpp"
 
 #include <cmath>
@@ -73,13 +73,13 @@ void render(Program& program, VertexArray& va, Texture& tex)
 	glUniformMatrix4fv(p_handle, 1, GL_FALSE, &projection[0][0]);
 
 	glBindVertexArray(va.id);
-
-  //-- bind texture
-	glBindTexture(tex.target, tex.id);
+  glBindTexture(tex.target, tex.id);
 
 	//glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
-	glDrawArrays(GL_TRIANGLES, 0, va.count);
 
+  GLsizei count = va.count;
+  //cout << count << endl;
+	glDrawArrays(GL_TRIANGLES, 0, count);
 
 	glBindVertexArray(0);
 
@@ -173,7 +173,7 @@ void computeBoundingBox(glm::vec3 size, glm::vec4 center) {
 
 }
 
-VertexArray* va;
+VertexArray va;
 Texture tex;
 
 int main(int argc, char *argv[])
@@ -194,7 +194,7 @@ int main(int argc, char *argv[])
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-	window = glfwCreateWindow(512, 512, "OBJ Viewer", 0, 0);
+	window = glfwCreateWindow(1024, 1024, "OBJ Viewer", 0, 0);
 	if (!window) {
 		cout << "Program failed to create GLFW window, TERMINATING" << endl;
 		glfwTerminate();
@@ -266,20 +266,21 @@ int main(int argc, char *argv[])
   //Texture tex;
   if (argc > 1) {
     va = Loader::loadObjFile(argv[1]);
-    tex = Texture(argv[2]);
+    tex = Texture(argv[2], p);
   } else {
-    va = Loader::loadObjFile("buddha2/buddha2.obj");
-    tex = Texture("buddha2/buddha2-atlas.jpg");
+    //va = Loader::loadObjFile("buddha2/buddha2.obj");
+    va = Loader::loadObjFile("test.obj");
+    tex = Texture("buddha2/buddha2-atlas.jpg", p);
   }
 
 
-  computeBoundingBox(va->size, va->center);
+  //computeBoundingBox(va->size, va->center);
 
 	// run an event-triggered main loop
 	while (!glfwWindowShouldClose(window))
 	{
     // render
-		render(p, (*va), tex);
+		render(p, va, tex);
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();

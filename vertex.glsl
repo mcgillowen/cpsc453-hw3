@@ -1,6 +1,6 @@
 #version 410
 
-layout(location = 0) in vec4 position;
+layout(location = 0) in vec3 position;
 layout(location = 1) in vec3 normal;
 layout(location = 2) in vec2 texture;
 
@@ -21,7 +21,7 @@ uniform vec3 light = vec3(1,1,1);
 
 void main() {
 
-    vec4 Pos = V * M * position;
+    vec4 Pos = V * M * vec4(position, 1.0);
 
     vs_out.N = mat3(M) * normal;
 
