@@ -1,16 +1,16 @@
 // Loader.cpp
 // Class that loads a .obj file into vectors of floats for OpenGL
 
-#include <vector>
-#include <cstdio>
-#include <cstring>
-
 #include "Loader.hpp"
+#include "ErrorChecking.hpp"
+#include <iostream>
 
 using std::vector;
 using std::fscanf;
 using std::strcmp;
 using std::printf;
+using std::cout;
+using std::endl;
 using namespace glm;
 
 
@@ -139,9 +139,10 @@ VertexArray* Loader::loadObjFile(const char * path) {
 
     VertexArray* va = new VertexArray(numVertices, numFaces);
 
-    va->addBuffer("vertices", 0, vertices);
-    va->addBuffer("normals", 1, normals);
-    va->addBuffer("textures", 2, texVertices);
+    va->addBuffer("vertices", 0, vertices, 4);
+    va->addBuffer("normals", 1, normals, 3);
+    va->addBuffer("textures", 2, texVertices, 2);
+    va->addBoundingDimensions(minX, minY, minZ, maxX, maxY, maxZ);
 
     return va;
 }

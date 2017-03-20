@@ -2,7 +2,7 @@
 ## Introduction to computer graphics
 
 
-# Homework 2: Loading OBJ files and Phong Shading
+# Homework 3: Loading OBJ files, Phong Shading and Textures
 
 ## Build instructions
 ### macOS

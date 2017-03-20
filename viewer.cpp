@@ -3,6 +3,7 @@
 #include "Loader.hpp"
 #include "Program.hpp"
 #include "IndexedVertexArray.hpp"
+#include "Texture.hpp"
 
 #include <cmath>
 
@@ -38,7 +39,7 @@ float xValue = 0.0;
 float yValue = 0.0;
 float zValue = 0.0;
 
-void render(Program& program, IndexedVertexArray& va)
+void render(Program& program, VertexArray& va, Texture& tex)
 {
 	// enable depth test and clear screen to a dark grey colour
 	glEnable( GL_DEPTH_TEST );
@@ -72,14 +73,16 @@ void render(Program& program, IndexedVertexArray& va)
 	glUniformMatrix4fv(p_handle, 1, GL_FALSE, &projection[0][0]);
 
 	glBindVertexArray(va.id);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, va.elementbuffer);
+
+  //-- bind texture
+	glBindTexture(tex.target, tex.id);
 
 	//glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
-	glDrawElements(GL_TRIANGLES, va.indices.size(), GL_UNSIGNED_INT, (void*)0);
+	glDrawArrays(GL_TRIANGLES, 0, va.count);
 
 
 	glBindVertexArray(0);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
 	glUseProgram(0);
 
 }
@@ -170,6 +173,9 @@ void computeBoundingBox(glm::vec3 size, glm::vec4 center) {
 
 }
 
+VertexArray* va;
+Texture tex;
+
 int main(int argc, char *argv[])
 {
 	// initialize the GLFW windowing system
@@ -245,31 +251,35 @@ int main(int argc, char *argv[])
           scaleUp();
         }
 
-    });
+  });
 
-    glfwSetFramebufferSizeCallback(window, [](GLFWwindow* window, int width, int height)
-    {
-        glViewport(0, 0, width, height);
-    });
-
-  	Program p("vertex.glsl","fragment.glsl");
-    IndexedVertexArray* va;
-    if (argc > 1) {
-      va = Loader::loadObjFile(argv[1]);
-    } else {
-      va = Loader::loadObjFile("buddha.obj");
-    }
+  glfwSetFramebufferSizeCallback(window, [](GLFWwindow* window, int width, int height)
+  {
+      glViewport(0, 0, width, height);
+  });
 
 
-    computeBoundingBox(va->size, va->center);
+  Program p("vertex.glsl","fragment.glsl");
+  //VertexArray* va;
+  //cout << "VertexArray" << endl;
+  //ErrorChecking::CheckGLErrors();
+  //Texture tex;
+  if (argc > 1) {
+    va = Loader::loadObjFile(argv[1]);
+    tex = Texture(argv[2]);
+  } else {
+    va = Loader::loadObjFile("buddha2/buddha2.obj");
+    tex = Texture("buddha2/buddha2-atlas.jpg");
+  }
 
-	cout << "Finished reading" << endl;
+
+  computeBoundingBox(va->size, va->center);
 
 	// run an event-triggered main loop
 	while (!glfwWindowShouldClose(window))
 	{
     // render
-		render(p, (*va));
+		render(p, (*va), tex);
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();

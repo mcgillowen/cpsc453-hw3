@@ -8,14 +8,13 @@ VertexArray::VertexArray(int c, int numberOfFaces) : count(c), numFaces(numberOf
     glGenVertexArrays(1, &id);
 }
 
-void VertexArray::addBuffer(string name, int index, vector<float> buffer) {
+void VertexArray::addBuffer(string name, int index, vector<float> buffer, int components) {
     GLuint buffer_id;
     glGenBuffers(1, &buffer_id);
     glBindBuffer(GL_ARRAY_BUFFER, buffer_id);
     glBufferData(GL_ARRAY_BUFFER, buffer.size()*sizeof(float), buffer.data(), GL_STATIC_DRAW);
     buffers[name]=buffer_id;
 
-    int components=buffer.size()/count;
     glBindVertexArray(id);
     glBindBuffer(GL_ARRAY_BUFFER, buffer_id);
     glEnableVertexAttribArray(index);

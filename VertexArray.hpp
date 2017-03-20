@@ -31,7 +31,7 @@ class VertexArray {
         glm::vec3 size;
 
         VertexArray(int c, int numberOfFaces);
-        void addBuffer(string name, int index, vector<float> buffer);
+        void addBuffer(string name, int index, vector<float> buffer, int components);
 
         void addBoundingDimensions(float minX, float maxX,
                                    float minY, float maxY,

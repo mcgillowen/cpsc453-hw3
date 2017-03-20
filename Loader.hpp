@@ -5,6 +5,8 @@
 #define LOADER_HPP
 
 #include <vector>
+#include <cstdio>
+#include <cstring>
 #include "IndexedVertexArray.hpp"
 
 #include <glm/glm.hpp>
@@ -17,7 +19,7 @@ class Loader {
     private:
 
     public:
-        static IndexedVertexArray* loadObjFile(const char * path);
+        static VertexArray* loadObjFile(const char * path);
 };
 
 #endif // LOADER_HPP
