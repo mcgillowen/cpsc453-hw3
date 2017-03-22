@@ -22,23 +22,35 @@ void Texture::init(std::string filename, Program& p, GLuint target) {
   if (data != nullptr)
   {
     this->target = target;
+    cout << "24" << endl;
+    ErrorChecking::CheckGLErrors();
     glGenTextures(1, &id);
-
+    cout << "26" << endl;
+    ErrorChecking::CheckGLErrors();
     glBindTexture(target, id);
-
+    cout << "29" << endl;
+    ErrorChecking::CheckGLErrors();
     GLuint formats[] = {GL_RED,GL_RG,GL_RGB,GL_RGBA};
     GLuint format = formats[numComponents-1];
+
+    cout << numComponents << ", " << format << ", " << GL_RGB << endl;
+    cout << target << ", " << GL_TEXTURE_2D << endl;
 
     cout << "width:" << width << endl;
     cout << "height:" << height << endl;
 
     glTexImage2D(target, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
-
+    cout << "38" << endl;
+    ErrorChecking::CheckGLErrors();
     //glActiveTexture(GL_TEXTURE0);
+    cout << "41" << endl;
+    ErrorChecking::CheckGLErrors();
     //glEnable(GL_TEXTURE_2D); // Enable it
+    cout << "44" << endl;
+    ErrorChecking::CheckGLErrors();
 
     glBindTexture(target, id);
-
+    cout << "48" << endl;
     ErrorChecking::CheckGLErrors();
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -48,13 +60,17 @@ void Texture::init(std::string filename, Program& p, GLuint target) {
     glGenerateMipmap(GL_TEXTURE_2D);
 
 
-    //GLuint hTexture = glGetUniformLocation(p.id, "image");
+    //GLuint hTexture = glGetUniformLocation(p.id, "texSam");
+    cout << "59" << endl;
+    ErrorChecking::CheckGLErrors();
     //glUniform1i(hTexture, 0);
+    cout << "62" << endl;
+    ErrorChecking::CheckGLErrors();
 
 
     //glBindTexture(target, 0);
     stbi_image_free(data);
-
+    cout << "68" << endl;
     ErrorChecking::CheckGLErrors();
   }
 }

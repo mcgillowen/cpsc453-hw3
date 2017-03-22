@@ -19,7 +19,8 @@ class Loader {
     private:
 
     public:
-        static VertexArray* loadObjFile(const char * path);
+        float minX, minY, minZ, maxX, maxY, maxZ;
+        VertexArray* loadObjFile(const char * path);
 };
 
 #endif // LOADER_HPP

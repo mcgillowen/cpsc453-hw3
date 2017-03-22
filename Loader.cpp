@@ -14,20 +14,20 @@ using std::endl;
 using namespace glm;
 
 
-VertexArray Loader::loadObjFile(const char * path) {
+VertexArray* Loader::loadObjFile(const char * path) {
 
     vector<float> vertices;
-    vector<float> texVertices;
+    vector<float> uvs;
+    vector<float> normals;
     vector<unsigned int> vertexIndices;
     vector<unsigned int> texIndices;
-    vector<float> normals;
+
 
     vector<vec3> tempVertices;
-    vector<vec2> tempTexVertices;
+    vector<vec2> tempUvs;
     vector<vec3> tempNormals;
 
     int numVertices = 0;
-    int numTexVertices = 0;
     int numFaces = 0;
 
     bool openFile = true;
@@ -49,10 +49,7 @@ VertexArray Loader::loadObjFile(const char * path) {
         if (strcmp(lineType, "vt") == 0) {
             vec2 vertexTexture;
             fscanf(file, "%f %f\n", &vertexTexture.x, &vertexTexture.y);
-            numTexVertices++;
-            //cout << vertexTexture.x << endl;
-            //cout << vertexTexture.y << endl;
-            tempTexVertices.push_back(vertexTexture);
+            tempUvs.push_back(vertexTexture);
         } else if (strcmp(lineType, "v") == 0) {
             vec3 vertex;
             fscanf(file, "%f %f %f\n", &vertex.x, &vertex.y, &vertex.z);
@@ -61,9 +58,17 @@ VertexArray Loader::loadObjFile(const char * path) {
             tempNormals.push_back(vec3(0.0,0.0,0.0));
         } else if (strcmp(lineType, "f") == 0) {
             unsigned int vertexIndex[3];
-            unsigned int textureIndex[3];
-            int matches = fscanf(file, "%d/%d %d/%d %d/%d\n", &vertexIndex[0], &textureIndex[0],
-             &vertexIndex[1], &textureIndex[1], &vertexIndex[2], &textureIndex[2]);
+            unsigned int texIndex[3];
+            //unsigned int normalIndex[3];
+            //int matches = fscanf(file, "%d/%d/%d %d/%d/%d %d/%d/%d\n",
+               // &vertexIndex[0], &texIndex[0], &normalIndex[0],
+               // &vertexIndex[1], &texIndex[1], &normalIndex[1],
+               // &vertexIndex[2], &texIndex[2], &normalIndex[2]);
+
+            int matches = fscanf(file, "%u/%u %u/%u %u/%u\n",
+                &vertexIndex[0], &texIndex[0],
+                &vertexIndex[1], &texIndex[1],
+                &vertexIndex[2], &texIndex[2]);
 
             if (matches != 6) {
                 printf("There was not the expected number of indexes");
@@ -75,13 +80,9 @@ VertexArray Loader::loadObjFile(const char * path) {
             vertexIndices.push_back(vertexIndex[1] - 1);
             vertexIndices.push_back(vertexIndex[2] - 1);
 
-            //cout << "indices" << endl;
-            texIndices.push_back(textureIndex[0] - 1);
-            //cout << textureIndex[0] << endl;
-            texIndices.push_back(textureIndex[1] - 1);
-            //cout << textureIndex[1] << endl;
-            texIndices.push_back(textureIndex[2] - 1);
-            //cout << textureIndex[2] << endl;
+            texIndices.push_back(texIndex[0] - 1);
+            texIndices.push_back(texIndex[1] - 1);
+            texIndices.push_back(texIndex[2] - 1);
 
             numFaces++;
         }
@@ -108,37 +109,20 @@ VertexArray Loader::loadObjFile(const char * path) {
       unsigned int textureIndex = texIndices[i];
 
       vec3 vertex = tempVertices[vertexIndex];
-      vec2 texture = tempTexVertices[textureIndex];
+      vec2 texture = tempUvs[textureIndex];
       vec3 normal = normalize(tempNormals[vertexIndex]);
 
-      cout << "New loop" << endl;
-      cout << vertexIndex << endl;
-      cout << textureIndex << endl;
-
-      cout << "" << endl;
-
       vertices.push_back(vertex.x);
-      cout << vertex.x << endl;
       vertices.push_back(vertex.y);
-      cout << vertex.y << endl;
       vertices.push_back(vertex.z);
-      cout << vertex.z << endl;
-      //vertices.push_back(vertex.w);
-      //cout << vertex.w << endl;
 
-      cout << "" << endl;
-
-      texVertices.push_back(texture.x);
-      cout << texture.x << endl;
-      texVertices.push_back(texture.y);
-      cout << texture.y << endl;
+      uvs.push_back(texture.x);
+      uvs.push_back(texture.y);
 
       normals.push_back(normal.x);
       normals.push_back(normal.y);
       normals.push_back(normal.z);
     }
-
-    float minX, minY, minZ, maxX, maxY, maxZ;
 
     minX = tempVertices[0].x;
     maxX = tempVertices[0].x;
@@ -156,12 +140,11 @@ VertexArray Loader::loadObjFile(const char * path) {
       if (tempVertices[i].z > maxZ) maxZ = tempVertices[i].z;
     }
 
-    VertexArray va = VertexArray(numVertices);
+    VertexArray* va = new VertexArray(numFaces * 3);
 
-    va.addBuffer("vertices", 0, vertices);
-    va.addBuffer("normals", 1, normals);
-    va.addBuffer("textures", 2, texVertices);
-    //va->addBoundingDimensions(minX, minY, minZ, maxX, maxY, maxZ);
+    va->addBuffer("vertices", 0, vertices);
+    va->addBuffer("normals", 1, normals);
+    va->addBuffer("textures", 2, uvs);
 
     return va;
 }

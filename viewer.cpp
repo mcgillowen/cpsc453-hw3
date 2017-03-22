@@ -20,31 +20,36 @@ using std::cout;
 using std::cerr;
 using std::endl;
 
-float pitchAngle = 0.0f;
-glm::vec3 pitchAxis = glm::vec3(1,0,0);
-glm::mat4 pitchMatrix = glm::rotate(pitchAngle, pitchAxis);
+glm::mat4 rotation = glm::mat4(1.0f);
+glm::mat4 scaling = glm::mat4(1.0f);
+glm::mat4 translation = glm::mat4(1.0f);
+float scalar = 1.0f;
 
-float rollAngle = 0.0f;
-glm::vec3 rollAxis = glm::vec3(0,0,1);
-glm::mat4 rollMatrix = glm::rotate(rollAngle, rollAxis);
+int width;
+int height;
 
-float yawAngle = 0.0f;
-glm::vec3 yawAxis = glm::vec3(0,1,0);
-glm::mat4 yawMatrix = glm::rotate(yawAngle, yawAxis);
+void computeBoundingBox(Loader l) {
+  glm::vec3 min = glm::vec3(l.minX, l.minY, l.minZ);
+  glm::vec3 max = glm::vec3(l.maxX, l.maxY, l.maxZ);
 
-float scaleValue = 1.0f;
-glm::mat4 scaleMatrix = glm::scale(glm::vec3(scaleValue, scaleValue, scaleValue));
+  float radius = glm::length(max - min) * 0.5f;
+  scaling = glm::scale(glm::mat4 (1.0f), glm::vec3 (0.95f / radius));
 
-float xValue = 0.0;
-float yValue = 0.0;
-float zValue = 0.0;
+  glm::vec3 center = (max + min) * 0.5f;
+
+  translation = glm::translate(glm::mat4(1.0f), -center);
+
+}
+
+VertexArray* va;
+Texture tex;
 
 void render(Program& program, VertexArray& va, Texture& tex)
 {
 	// enable depth test and clear screen to a dark grey colour
 	glEnable( GL_DEPTH_TEST );
 	glDepthFunc(GL_LESS);
-	glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
+	glClearColor(0.8f, 0.8f, 0.8f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glUseProgram(program.id);
@@ -53,24 +58,18 @@ void render(Program& program, VertexArray& va, Texture& tex)
 	GLuint v_handle = glGetUniformLocation(program.id, "V");
 	GLuint p_handle = glGetUniformLocation(program.id, "P");
 
-	// modeling matrix to rotate. Rotation angle is specified in degrees
-  glm::mat4 rotationMatrix = yawMatrix * pitchMatrix * rollMatrix;
-  glm::mat4 translationMatrix = glm::translate(glm::vec3(xValue, yValue, zValue));
-  glm::mat4 inverseTranslation = glm::inverse(translationMatrix);
-	glm::mat4 model = scaleMatrix * translationMatrix * rotationMatrix;
-	glm::mat4 view = glm::lookAt(
-	  glm::vec3(0,0,5), // Camera is here in world Space
-	  glm::vec3(0,0,0), // and looks at the origin
-	  glm::vec3(0,1,0)  // Up direction is the y axis
-	);
+	//Scale based on input
+  scaling = glm::scale (glm::mat4(1.0f), glm::vec3 (scalar)) * scaling;
 
-	// specify a perspective projection. Parameters are
-	// fov in degrees, aspect ratio, distance to near plane, distance to far plane
-	glm::mat4 projection = glm::perspective(45.f, 1.f, 1.f, 10.f);
+  //Create and pass model view matrix
+  glm::mat4 modelView = glm::lookAt (glm::vec3(0.0f, 0.0f, -10.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+  modelView *= rotation * scaling * translation;
 
-	glUniformMatrix4fv(m_handle, 1, GL_FALSE, &model[0][0]);
-	glUniformMatrix4fv(v_handle, 1, GL_FALSE, &view[0][0]);
-	glUniformMatrix4fv(p_handle, 1, GL_FALSE, &projection[0][0]);
+  //Create and pass projection matrix
+  glm::mat4 proj = glm::perspective (45.0f, (float)width / (float)height, 0.1f, 100.0f);
+
+	glUniformMatrix4fv(m_handle, 1, GL_FALSE, &modelView[0][0]);
+	glUniformMatrix4fv(p_handle, 1, GL_FALSE, &proj[0][0]);
 
 	glBindVertexArray(va.id);
   glBindTexture(tex.target, tex.id);
@@ -86,95 +85,6 @@ void render(Program& program, VertexArray& va, Texture& tex)
 	glUseProgram(0);
 
 }
-
-void pitchUp() {
-
-
-  pitchAngle += 1.0f;
-  pitchMatrix = glm::rotate(pitchAngle, pitchAxis);
-
-}
-
-void pitchDown() {
-
-  pitchAngle -= 1.0f;
-  pitchMatrix = glm::rotate(pitchAngle, pitchAxis);
-
-}
-
-void rollClockwise() {
-
-  rollAngle -= 1.0f;
-  rollMatrix = glm::rotate(rollAngle, rollAxis);
-
-}
-
-void rollCounterClockwise() {
-
-  rollAngle += 1.0f;
-  rollMatrix = glm::rotate(rollAngle, rollAxis);
-
-}
-
-void yawRight() {
-
-  yawAngle += 1.0f;
-  yawMatrix = glm::rotate(yawAngle, yawAxis);
-
-}
-
-void yawLeft() {
-
-  yawAngle -= 1.0f;
-  yawMatrix = glm::rotate(yawAngle, yawAxis);
-
-}
-
-void scaleDown() {
-  scaleValue -= 0.1f;
-  scaleMatrix = glm::scale(glm::vec3(scaleValue, scaleValue, scaleValue));
-}
-
-void scaleUp() {
-  scaleValue += 0.1f;
-  scaleMatrix = glm::scale(glm::vec3(scaleValue, scaleValue, scaleValue));
-}
-
-void increaseX() {
-  xValue += 1.0f;
-}
-void decreaseX() {
-  xValue -= 1.0f;
-}
-
-void increaseY() {
-  yValue += 1.0f;
-}
-void decreaseY() {
-  yValue -= 1.0f;
-}
-
-void increaseZ() {
-  zValue += 1.0f;
-}
-void decreaseZ() {
-  zValue -= 1.0f;
-}
-
-void computeBoundingBox(glm::vec3 size, glm::vec4 center) {
-
-  xValue = center.x - 0.0f;
-  yValue = center.y - 0.0f;
-  zValue = center.z - 0.0f;
-
-  float sizeLength = glm::length(size);
-
-  scaleValue /= sizeLength;
-
-}
-
-VertexArray va;
-Texture tex;
 
 int main(int argc, char *argv[])
 {
@@ -194,7 +104,7 @@ int main(int argc, char *argv[])
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-	window = glfwCreateWindow(1024, 1024, "OBJ Viewer", 0, 0);
+	window = glfwCreateWindow(800, 800, "OBJ Viewer", 0, 0);
 	if (!window) {
 		cout << "Program failed to create GLFW window, TERMINATING" << endl;
 		glfwTerminate();
@@ -205,82 +115,57 @@ int main(int argc, char *argv[])
 
   glfwSetKeyCallback(window,
     [](GLFWwindow* window, int key, int scancode, int action, int mode){
-        //Rotation controls
-        if (key == GLFW_KEY_W && action == GLFW_PRESS) {
-          pitchUp();
-        }
-        if (key == GLFW_KEY_S && action == GLFW_PRESS) {
-          pitchDown();
-        }
-        if (key == GLFW_KEY_D && action == GLFW_PRESS) {
-          rollClockwise();
-        }
-        if (key == GLFW_KEY_A && action == GLFW_PRESS) {
-          rollCounterClockwise();
-        }
-        if (key == GLFW_KEY_E && action == GLFW_PRESS) {
-          yawRight();
-        }
-        if (key == GLFW_KEY_Q && action == GLFW_PRESS) {
-          yawLeft();
-        }
-        //Translation controls
-        if (key == GLFW_KEY_UP && action == GLFW_PRESS) {
-          increaseZ();
-        }
-        if (key == GLFW_KEY_DOWN && action == GLFW_PRESS) {
-          decreaseZ();
-        }
-        if (key == GLFW_KEY_LEFT && action == GLFW_PRESS) {
-          decreaseX();
-        }
-        if (key == GLFW_KEY_RIGHT && action == GLFW_PRESS) {
-          increaseX();
-        }
-        if (key == GLFW_KEY_PAGE_UP && action == GLFW_PRESS) {
-          increaseY();
-        }
-        if (key == GLFW_KEY_PAGE_DOWN && action == GLFW_PRESS) {
-          decreaseY();
-        }
+        if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
+          glfwSetWindowShouldClose(window, GL_TRUE);
 
-        if (key == GLFW_KEY_J && action == GLFW_PRESS) {
-          scaleDown();
-        }
-        if (key == GLFW_KEY_K && action == GLFW_PRESS) {
-          scaleUp();
-        }
+        if (key == GLFW_KEY_UP && (action == GLFW_PRESS || action == GLFW_REPEAT))
+          rotation = rotation * glm::rotate(glm::mat4(1.0f), 0.1f, glm::vec3 (1.0f, 0.0f, 0.0f)) ;
+        if (key == GLFW_KEY_DOWN && (action == GLFW_PRESS || action == GLFW_REPEAT))
+          rotation = rotation * glm::rotate(glm::mat4(1.0f), 0.1f, glm::vec3 (-1.0f, 0.0f, 0.0f));
 
+        if (key == GLFW_KEY_RIGHT && (action == GLFW_PRESS || action == GLFW_REPEAT))
+          rotation = rotation * glm::rotate(glm::mat4(1.0f), 0.1f, glm::vec3 (0.0f, 1.0f, 0.0f));
+        if (key == GLFW_KEY_LEFT && (action == GLFW_PRESS || action == GLFW_REPEAT))
+          rotation = rotation * glm::rotate(glm::mat4(1.0f), 0.1f, glm::vec3 (0.0f, -1.0f, 0.0f));
+
+        if (key == GLFW_KEY_X && (action == GLFW_PRESS || action == GLFW_REPEAT))
+          rotation = rotation * glm::rotate(glm::mat4(1.0f), 0.1f, glm::vec3 (0.0f, 0.0f, 1.0f));
+        if (key == GLFW_KEY_Z && (action == GLFW_PRESS || action == GLFW_REPEAT))
+          rotation = rotation * glm::rotate(glm::mat4(1.0f), 0.1f, glm::vec3 (0.0f, 0.0f, -1.0f));
   });
 
-  glfwSetFramebufferSizeCallback(window, [](GLFWwindow* window, int width, int height)
-  {
-      glViewport(0, 0, width, height);
+  glfwSetMouseButtonCallback(window, [](GLFWwindow* window, int button, int action, int mods) {
+    if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
+      scalar = 1.1f;
+    if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE)
+      scalar = 1.0f;
+
+    if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS)
+      scalar = 1.0f / 1.1f;
+    if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_RELEASE)
+      scalar = 1.0f;
   });
+
+  glfwGetFramebufferSize(window, &width, &height);
 
 
   Program p("vertex.glsl","fragment.glsl");
-  //VertexArray* va;
-  //cout << "VertexArray" << endl;
-  //ErrorChecking::CheckGLErrors();
-  //Texture tex;
+  Loader l;
   if (argc > 1) {
-    va = Loader::loadObjFile(argv[1]);
+    va = l.loadObjFile(argv[1]);
     tex = Texture(argv[2], p);
   } else {
-    //va = Loader::loadObjFile("buddha2/buddha2.obj");
-    va = Loader::loadObjFile("test.obj");
+    va = l.loadObjFile("buddha2/buddha2.obj");
+    //va = l.loadObjFile("test.obj");
     tex = Texture("buddha2/buddha2-atlas.jpg", p);
   }
 
-
-  //computeBoundingBox(va->size, va->center);
+  computeBoundingBox(l);
 
 	// run an event-triggered main loop
-	while (!glfwWindowShouldClose(window))
-	{
+	while (!glfwWindowShouldClose(window)){
     // render
-		render(p, va, tex);
+		render(p, (*va), tex);
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();

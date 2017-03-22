@@ -1,6 +1,9 @@
 // ErrorChecking.hpp
 // A class for error checking code
 
+#ifndef ERROR_CHECKING_HPP
+#define ERROR_CHECKING_HPP
+
 #include <iostream>
 
 using std::cout;
@@ -32,3 +35,5 @@ class ErrorChecking {
     }
 
 };
+
+#endif // ERROR_CHECKING_HPP
